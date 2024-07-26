@@ -1,5 +1,7 @@
-## START
-go run main.go
+## START linter
+
+
+
 
 
 

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+golangci-lint run
+
+if [ $? -ne 0 ]; then
+  echo "Linting errors found. Please fix them before committing."
+  exit 1
+else
+  echo "Linting completed successfully. No issues found."
+fi
