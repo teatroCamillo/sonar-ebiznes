@@ -1,18 +1,22 @@
+// Package controllers contains the controllers for handling HTTP requests.
 package controllers
 
 import (
 	"net/http"
-	"github.com/labstack/echo/v4"
-	"task/sop/models"
-	"errors"
 	"strconv"
+	"errors"
+	"task/sop/models"
+
+	"github.com/labstack/echo/v4"
 )
 
+// ProductController handles operations on products.
 type ProductController struct {
 	products []models.Product
 	nextID   int
 }
 
+// NewProductController creates a new ProductController.
 func NewProductController() *ProductController {
 	return &ProductController{
 		products: []models.Product{
@@ -31,6 +35,7 @@ func NewProductController() *ProductController {
 	}
 }
 
+// CreateProduct handles the creation of a new product.
 func (pc *ProductController) CreateProduct(c echo.Context) error {
 	var product models.Product
 	if err := c.Bind(&product); err != nil {
@@ -42,6 +47,7 @@ func (pc *ProductController) CreateProduct(c echo.Context) error {
 	return c.JSON(http.StatusCreated, product)
 }
 
+// UpdateProduct handles updating an existing product.
 func (pc *ProductController) UpdateProduct(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -64,10 +70,12 @@ func (pc *ProductController) UpdateProduct(c echo.Context) error {
 	return c.JSON(http.StatusNotFound, errors.New("product not found"))
 }
 
+// GetProducts handles retrieving all products.
 func (pc *ProductController) GetProducts(c echo.Context) error {
 	return c.JSON(http.StatusOK, pc.products)
 }
 
+// DeleteProduct handles deleting a product by ID.
 func (pc *ProductController) DeleteProduct(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

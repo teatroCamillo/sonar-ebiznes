@@ -22,6 +22,11 @@ func TestCreateCart(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
+	// Obsługa wartości zwrotnej
+	if err := cc.CreateCart(c); err != nil {
+		t.Fatalf("CreateCart error: %v", err)
+	}
+
 	if assert.NoError(t, cc.CreateCart(c)) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
 	}
@@ -32,10 +37,13 @@ func TestGetCarts(t *testing.T) {
 	pc := NewProductController()
 	cc := NewCartController(pc)
 
-	cc.CreateCart(e.NewContext(
+	// Obsługa wartości zwrotnej
+	if err := cc.CreateCart(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreateCart error: %v", err)
+	}
 
 	req := httptest.NewRequest(http.MethodGet, "/carts", nil)
 	rec := httptest.NewRecorder()
@@ -51,10 +59,13 @@ func TestGetCart(t *testing.T) {
 	pc := NewProductController()
 	cc := NewCartController(pc)
 
-	cc.CreateCart(e.NewContext(
+	// Obsługa wartości zwrotnej
+	if err := cc.CreateCart(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreateCart error: %v", err)
+	}
 
 	req := httptest.NewRequest(http.MethodGet, "/carts/0", nil)
 	rec := httptest.NewRecorder()
@@ -74,17 +85,25 @@ func TestAddProductToCart(t *testing.T) {
 
 	log.Println("Products contains:")
 	log.Println(pc.products)
-	pc.CreateProduct(e.NewContext(
+
+	// Obsługa wartości zwrotnej
+	if err := pc.CreateProduct(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/products", strings.NewReader(`{"name":"Smartphone","price":699.99}`)),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreateProduct error: %v", err)
+	}
+
 	log.Println("Products contains:")
 	log.Println(pc.products)
-	
-	cc.CreateCart(e.NewContext(
+
+	// Obsługa wartości zwrotnej
+	if err := cc.CreateCart(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreateCart error: %v", err)
+	}
 
 	req := httptest.NewRequest(http.MethodPost, "/carts/0/products/0", nil)
 	rec := httptest.NewRecorder()
@@ -107,25 +126,34 @@ func TestRemoveProductFromCart(t *testing.T) {
 	log.Println(pc.products)
 
 	// Dodajemy nowy produkt (ID 10) do listy produktów
-	pc.CreateProduct(e.NewContext(
+	if err := pc.CreateProduct(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/products", strings.NewReader(`{"name":"New Product","price":99.99}`)),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreateProduct error: %v", err)
+	}
+
 	log.Println("Products contains 2:")
 	log.Println(pc.products)
 
-	cc.CreateCart(e.NewContext(
+	// Obsługa wartości zwrotnej
+	if err := cc.CreateCart(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreateCart error: %v", err)
+	}
 
 	log.Println("Cart BEFORE population contains:")
 	log.Println(cc.carts)
 
-	cc.AddProductToCart(e.NewContext(
+	// Obsługa wartości zwrotnej
+	if err := cc.AddProductToCart(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/carts/0/products/10", nil),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("AddProductToCart error: %v", err)
+	}
 
 	log.Println("Cart after population contains:")
 	log.Println(cc.carts)
@@ -150,10 +178,13 @@ func TestDeleteCart(t *testing.T) {
 	pc := NewProductController()
 	cc := NewCartController(pc)
 
-	cc.CreateCart(e.NewContext(
+	// Obsługa wartości zwrotnej
+	if err := cc.CreateCart(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreateCart error: %v", err)
+	}
 
 	req := httptest.NewRequest(http.MethodDelete, "/carts/0", nil)
 	rec := httptest.NewRecorder()
@@ -165,3 +196,4 @@ func TestDeleteCart(t *testing.T) {
 		assert.Equal(t, http.StatusNoContent, rec.Code)
 	}
 }
+	

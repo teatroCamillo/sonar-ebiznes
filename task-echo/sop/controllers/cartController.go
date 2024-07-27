@@ -1,19 +1,23 @@
+// Package controllers contains the controllers for handling HTTP requests.
 package controllers
 
 import (
 	"net/http"
-	"github.com/labstack/echo/v4"
-	"task/sop/models"
-	"errors"
 	"strconv"
+	"errors"
+	"task/sop/models"
+
+	"github.com/labstack/echo/v4"
 )
 
+// CartController handles operations on carts.
 type CartController struct {
 	carts  []models.Cart
 	nextID int
 	pc     *ProductController
 }
 
+// NewCartController creates a new CartController.
 func NewCartController(pc *ProductController) *CartController {
 	return &CartController{
 		carts: []models.Cart{
@@ -24,6 +28,7 @@ func NewCartController(pc *ProductController) *CartController {
 	}
 }
 
+// CreateCart handles the creation of a new cart.
 func (cc *CartController) CreateCart(c echo.Context) error {
 	var cart models.Cart
 	if err := c.Bind(&cart); err != nil {
@@ -36,10 +41,12 @@ func (cc *CartController) CreateCart(c echo.Context) error {
 	return c.JSON(http.StatusCreated, cart)
 }
 
+// GetCarts handles retrieving all carts.
 func (cc *CartController) GetCarts(c echo.Context) error {
 	return c.JSON(http.StatusOK, cc.carts)
 }
 
+// GetCart handles retrieving a single cart by ID.
 func (cc *CartController) GetCart(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id < 0 {
@@ -53,6 +60,7 @@ func (cc *CartController) GetCart(c echo.Context) error {
 	return c.JSON(http.StatusNotFound, errors.New("cart not found"))
 }
 
+// AddProductToCart handles adding a product to a cart.
 func (cc *CartController) AddProductToCart(c echo.Context) error {
 	cartID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -73,7 +81,6 @@ func (cc *CartController) AddProductToCart(c echo.Context) error {
 	}
 
 	if cart == nil || cart.Status == "paid" {
-		// Tworzymy nowy koszyk
 		cart = &models.Cart{
 			ID:         cc.nextID,
 			Products:   []models.Product{},
@@ -102,6 +109,7 @@ func (cc *CartController) AddProductToCart(c echo.Context) error {
 	return c.JSON(http.StatusOK, cart)
 }
 
+// RemoveProductFromCart handles removing a product from a cart.
 func (cc *CartController) RemoveProductFromCart(c echo.Context) error {
 	cartID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -142,6 +150,7 @@ func (cc *CartController) RemoveProductFromCart(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
+// DeleteCart handles deleting a cart by ID.
 func (cc *CartController) DeleteCart(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

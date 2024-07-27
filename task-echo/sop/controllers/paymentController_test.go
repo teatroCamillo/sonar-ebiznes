@@ -17,10 +17,12 @@ func TestCreatePayment(t *testing.T) {
 	paymentC := NewPaymentController(cc)
 
 	// Tworzenie koszyka
-	cc.CreateCart(e.NewContext(
+	if err := cc.CreateCart(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreateCart error: %v", err)
+	}
 
 	req := httptest.NewRequest(http.MethodPost, "/payments/0", nil)
 	rec := httptest.NewRecorder()
@@ -52,10 +54,12 @@ func TestGetPayments(t *testing.T) {
 	cc := NewCartController(pc)
 	paymentC := NewPaymentController(cc)
 
-	paymentC.CreatePayment(e.NewContext(
+	if err := paymentC.CreatePayment(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/payments/0", nil),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreatePayment error: %v", err)
+	}
 
 	req := httptest.NewRequest(http.MethodGet, "/payments", nil)
 	rec := httptest.NewRecorder()
@@ -72,10 +76,12 @@ func TestGetPayment(t *testing.T) {
 	cc := NewCartController(pc)
 	paymentC := NewPaymentController(cc)
 
-	paymentC.CreatePayment(e.NewContext(
+	if err := paymentC.CreatePayment(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/payments/0", nil),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreatePayment error: %v", err)
+	}
 
 	req := httptest.NewRequest(http.MethodGet, "/payments/1", nil)
 	rec := httptest.NewRecorder()
@@ -95,10 +101,12 @@ func TestUpdatePayment(t *testing.T) {
 	cc := NewCartController(pc)
 	paymentC := NewPaymentController(cc)
 
-	paymentC.CreatePayment(e.NewContext(
+	if err := paymentC.CreatePayment(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/payments/0", nil),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreatePayment error: %v", err)
+	}
 
 	paymentJSON := `{"amount":150.0,"method":"PayPal","cart_id":0}`
 	req := httptest.NewRequest(http.MethodPut, "/payments/1", strings.NewReader(paymentJSON))
@@ -120,10 +128,12 @@ func TestDeletePayment(t *testing.T) {
 	cc := NewCartController(pc)
 	paymentC := NewPaymentController(cc)
 
-	paymentC.CreatePayment(e.NewContext(
+	if err := paymentC.CreatePayment(e.NewContext(
 		httptest.NewRequest(http.MethodPost, "/payments/0", nil),
 		httptest.NewRecorder(),
-	))
+	)); err != nil {
+		t.Fatalf("CreatePayment error: %v", err)
+	}
 
 	req := httptest.NewRequest(http.MethodDelete, "/payments/1", nil)
 	rec := httptest.NewRecorder()
