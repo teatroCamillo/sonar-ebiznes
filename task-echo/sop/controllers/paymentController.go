@@ -8,6 +8,7 @@ import (
 	"task/sop/models"
 
 	"github.com/labstack/echo/v4"
+	"task/sop"
 )
 
 // PaymentController handles operations on payments.
@@ -72,21 +73,21 @@ func (pc *PaymentController) GetPayments(c echo.Context) error {
 func (pc *PaymentController) GetPayment(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id < 0 {
-		return c.JSON(http.StatusBadRequest, errors.New("invalid payment ID"))
+		return c.JSON(http.StatusBadRequest, errors.New(sop.InvalidPaymentID))
 	}
 	for _, payment := range pc.payments {
 		if payment.ID == id {
 			return c.JSON(http.StatusOK, payment)
 		}
 	}
-	return c.JSON(http.StatusNotFound, errors.New("payment not found"))
+	return c.JSON(http.StatusNotFound, errors.New(sop.PaymentNotFound))
 }
 
 // UpdatePayment handles updating an existing payment.
 func (pc *PaymentController) UpdatePayment(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id < 0 {
-		return c.JSON(http.StatusBadRequest, errors.New("invalid payment ID"))
+		return c.JSON(http.StatusBadRequest, errors.New(sop.InvalidPaymentID))
 	}
 
 	var updatedPayment models.Payment
@@ -101,14 +102,14 @@ func (pc *PaymentController) UpdatePayment(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusNotFound, errors.New("payment not found"))
+	return c.JSON(http.StatusNotFound, errors.New(sop.PaymentNotFound))
 }
 
 // DeletePayment handles deleting a payment by ID.
 func (pc *PaymentController) DeletePayment(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id < 0 {
-		return c.JSON(http.StatusBadRequest, errors.New("invalid payment ID"))
+		return c.JSON(http.StatusBadRequest, errors.New(sop.InvalidPaymentID))
 	}
 
 	for i, payment := range pc.payments {
@@ -118,5 +119,5 @@ func (pc *PaymentController) DeletePayment(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusNotFound, errors.New("payment not found"))
+	return c.JSON(http.StatusNotFound, errors.New(sop.PaymentNotFound))
 }

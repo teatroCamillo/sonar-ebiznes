@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"task/sop"
 )
 
 func TestCreateCart(t *testing.T) {
@@ -17,14 +18,14 @@ func TestCreateCart(t *testing.T) {
 	cc := NewCartController(pc)
 
 	cartJSON := `{"products":[]}`
-	req := httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(cartJSON))
+	req := httptest.NewRequest(http.MethodPost, sop.CartsEndpoint, strings.NewReader(cartJSON))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
 	// Obsługa wartości zwrotnej
 	if err := cc.CreateCart(c); err != nil {
-		t.Fatalf("CreateCart error: %v", err)
+		t.Fatalf(sop.CreateCartErrorv, err)
 	}
 
 	if assert.NoError(t, cc.CreateCart(c)) {
@@ -39,13 +40,13 @@ func TestGetCarts(t *testing.T) {
 
 	// Obsługa wartości zwrotnej
 	if err := cc.CreateCart(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
+		httptest.NewRequest(http.MethodPost, sop.CartsEndpoint, strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreateCart error: %v", err)
+		t.Fatalf(sop.CreateCartErrorv, err)
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/carts", nil)
+	req := httptest.NewRequest(http.MethodGet, sop.CartsEndpoint, nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
@@ -61,10 +62,10 @@ func TestGetCart(t *testing.T) {
 
 	// Obsługa wartości zwrotnej
 	if err := cc.CreateCart(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
+		httptest.NewRequest(http.MethodPost, sop.CartsEndpoint, strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreateCart error: %v", err)
+		t.Fatalf(sop.CreateCartErrorv, err)
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/carts/0", nil)
@@ -83,7 +84,7 @@ func TestAddProductToCart(t *testing.T) {
 	pc := NewProductController()
 	cc := NewCartController(pc)
 
-	log.Println("Products contains:")
+	log.Println(sop.ProductContains)
 	log.Println(pc.products)
 
 	// Obsługa wartości zwrotnej
@@ -91,18 +92,18 @@ func TestAddProductToCart(t *testing.T) {
 		httptest.NewRequest(http.MethodPost, "/products", strings.NewReader(`{"name":"Smartphone","price":699.99}`)),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreateProduct error: %v", err)
+		t.Fatalf(sop.CreateCartErrorv, err)
 	}
 
-	log.Println("Products contains:")
+	log.Println(sop.ProductContains)
 	log.Println(pc.products)
 
 	// Obsługa wartości zwrotnej
 	if err := cc.CreateCart(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
+		httptest.NewRequest(http.MethodPost, sop.CartsEndpoint, strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreateCart error: %v", err)
+		t.Fatalf(sop.CreateCartErrorv, err)
 	}
 
 	req := httptest.NewRequest(http.MethodPost, "/carts/0/products/0", nil)
@@ -122,7 +123,7 @@ func TestRemoveProductFromCart(t *testing.T) {
 	pc := NewProductController()
 	cc := NewCartController(pc)
 
-	log.Println("Products contains:")
+	log.Println(sop.ProductContains)
 	log.Println(pc.products)
 
 	// Dodajemy nowy produkt (ID 10) do listy produktów
@@ -130,7 +131,7 @@ func TestRemoveProductFromCart(t *testing.T) {
 		httptest.NewRequest(http.MethodPost, "/products", strings.NewReader(`{"name":"New Product","price":99.99}`)),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreateProduct error: %v", err)
+		t.Fatalf(sop.CreateCartErrorv, err)
 	}
 
 	log.Println("Products contains 2:")
@@ -138,10 +139,10 @@ func TestRemoveProductFromCart(t *testing.T) {
 
 	// Obsługa wartości zwrotnej
 	if err := cc.CreateCart(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
+		httptest.NewRequest(http.MethodPost, sop.CartsEndpoint, strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreateCart error: %v", err)
+		t.Fatalf(sop.CreateCartErrorv, err)
 	}
 
 	log.Println("Cart BEFORE population contains:")
@@ -180,10 +181,10 @@ func TestDeleteCart(t *testing.T) {
 
 	// Obsługa wartości zwrotnej
 	if err := cc.CreateCart(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/carts", strings.NewReader(`{"products":[]}`)),
+		httptest.NewRequest(http.MethodPost, sop.CartsEndpoint, strings.NewReader(`{"products":[]}`)),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreateCart error: %v", err)
+		t.Fatalf(sop.CreateCartErrorv, err)
 	}
 
 	req := httptest.NewRequest(http.MethodDelete, "/carts/0", nil)
@@ -196,4 +197,3 @@ func TestDeleteCart(t *testing.T) {
 		assert.Equal(t, http.StatusNoContent, rec.Code)
 	}
 }
-	

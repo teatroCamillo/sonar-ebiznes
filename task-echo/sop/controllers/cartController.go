@@ -7,6 +7,7 @@ import (
 	"errors"
 	"task/sop/models"
 	"github.com/labstack/echo/v4"
+	"task/sop"
 )
 
 // CartController handles operations on carts.
@@ -49,21 +50,21 @@ func (cc *CartController) GetCarts(c echo.Context) error {
 func (cc *CartController) GetCart(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id < 0 {
-		return c.JSON(http.StatusBadRequest, errors.New("invalid cart ID"))
+		return c.JSON(http.StatusBadRequest, errors.New(sop.InvalidCartID))
 	}
 	for _, cart := range cc.carts {
 		if cart.ID == id {
 			return c.JSON(http.StatusOK, cart)
 		}
 	}
-	return c.JSON(http.StatusNotFound, errors.New("cart not found"))
+	return c.JSON(http.StatusNotFound, errors.New(sop.CartNotFound))
 }
 
 // AddProductToCart handles adding a product to a cart.
 func (cc *CartController) AddProductToCart(c echo.Context) error {
 	cartID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, errors.New("invalid cart ID"))
+		return c.JSON(http.StatusBadRequest, errors.New(sop.InvalidCartID))
 	}
 
 	productID, err := strconv.Atoi(c.Param("productId"))
@@ -112,7 +113,7 @@ func (cc *CartController) AddProductToCart(c echo.Context) error {
 func (cc *CartController) RemoveProductFromCart(c echo.Context) error {
 	cartID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, errors.New("invalid cart ID"))
+		return c.JSON(http.StatusBadRequest, errors.New(sop.InvalidCartID))
 	}
 
 	productID, err := strconv.Atoi(c.Param("productId"))
@@ -129,7 +130,7 @@ func (cc *CartController) RemoveProductFromCart(c echo.Context) error {
 	}
 
 	if cart == nil {
-		return c.JSON(http.StatusNotFound, errors.New("cart not found"))
+		return c.JSON(http.StatusNotFound, errors.New(sop.CartNotFound))
 	}
 
 	productFound := false
@@ -153,7 +154,7 @@ func (cc *CartController) RemoveProductFromCart(c echo.Context) error {
 func (cc *CartController) DeleteCart(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, errors.New("invalid cart ID"))
+		return c.JSON(http.StatusBadRequest, errors.New(sop.InvalidCartID))
 	}
 
 	for i, cart := range cc.carts {
@@ -163,7 +164,7 @@ func (cc *CartController) DeleteCart(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusNotFound, errors.New("cart not found"))
+	return c.JSON(http.StatusNotFound, errors.New(sop.CartNotFound))
 }
 
 func calculateTotalPrice(products []models.Product) float64 {
