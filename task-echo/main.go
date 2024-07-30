@@ -5,13 +5,14 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"task/sop/controllers"
+	"task/sop"
 )
 
 func main() {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000"},
+		AllowOrigins: []string{sop.Localhost},
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 	}))
 
@@ -19,23 +20,23 @@ func main() {
 	cartC := controllers.NewCartController(pc)
 	paymentC := controllers.NewPaymentController(cartC)
 
-	e.POST("/products", pc.CreateProduct)
-	e.GET("/products", pc.GetProducts)
-	e.PUT("/products/:id", pc.UpdateProduct)
-	e.DELETE("/products/:id", pc.DeleteProduct)
+	e.POST(sop.ProductsEndpoint, pc.CreateProduct)
+	e.GET(sop.ProductsEndpoint, pc.GetProducts)
+	e.PUT(sop.ProductByID, pc.UpdateProduct)
+	e.DELETE(sop.ProductByID, pc.DeleteProduct)
 
-	e.POST("/carts", cartC.CreateCart)
-	e.GET("/carts/:id", cartC.GetCart)
-	e.GET("/carts", cartC.GetCarts)
-	e.POST("/carts/:id/products/:productId", cartC.AddProductToCart)
-	e.DELETE("/carts/:id", cartC.DeleteCart)
-	e.DELETE("/carts/:id/products/:productId", cartC.RemoveProductFromCart)
+	e.POST(sop.CartsEndpoint, cartC.CreateCart)
+	e.GET(sop.CartByID, cartC.GetCart)
+	e.GET(sop.CartsEndpoint, cartC.GetCarts)
+	e.POST(sop.CartProducts, cartC.AddProductToCart)
+	e.DELETE(sop.CartByID, cartC.DeleteCart)
+	e.DELETE(sop.CartProducts, cartC.RemoveProductFromCart)
 
-	e.POST("/payments/:cartID", paymentC.CreatePayment)
-	e.GET("/payments", paymentC.GetPayments)
-	e.GET("/payments/:id", paymentC.GetPayment)
-	e.PUT("/payments/:id", paymentC.UpdatePayment)
-	e.DELETE("/payments/:id", paymentC.DeletePayment)
+	e.POST(sop.PaymentByCartID, paymentC.CreatePayment)
+	e.GET(sop.PaymentsEndpoint, paymentC.GetPayments)
+	e.GET(sop.PaymentByID, paymentC.GetPayment)
+	e.PUT(sop.PaymentByID, paymentC.UpdatePayment)
+	e.DELETE(sop.PaymentByID, paymentC.DeletePayment)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
