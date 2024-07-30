@@ -8,6 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"task/sop"
 )
 
 func TestCreatePayment(t *testing.T) {
@@ -24,7 +25,7 @@ func TestCreatePayment(t *testing.T) {
 		t.Fatalf("CreateCart error: %v", err)
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/payments/0", nil)
+	req := httptest.NewRequest(http.MethodPost, sop.PaymentsEndpoint + "/0", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.SetParamNames("cart_id")
@@ -37,7 +38,7 @@ func TestCreatePayment(t *testing.T) {
 	}
 
 	// Próba ponownej płatności
-	req = httptest.NewRequest(http.MethodPost, "/payments/0", nil)
+	req = httptest.NewRequest(http.MethodPost, sop.PaymentsEndpoint + "/0", nil)
 	rec = httptest.NewRecorder()
 	c = e.NewContext(req, rec)
 	c.SetParamNames("cart_id")
@@ -55,10 +56,10 @@ func TestGetPayments(t *testing.T) {
 	paymentC := NewPaymentController(cc)
 
 	if err := paymentC.CreatePayment(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/payments/0", nil),
+		httptest.NewRequest(http.MethodPost, sop.PaymentsEndpoint + "/0", nil),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreatePayment error: %v", err)
+		t.Fatalf(sop.CreatePaymentErrorv, err)
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/payments", nil)
@@ -77,13 +78,13 @@ func TestGetPayment(t *testing.T) {
 	paymentC := NewPaymentController(cc)
 
 	if err := paymentC.CreatePayment(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/payments/0", nil),
+		httptest.NewRequest(http.MethodPost, sop.PaymentsEndpoint + "/0", nil),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreatePayment error: %v", err)
+		t.Fatalf(sop.CreatePaymentErrorv, err)
 	}
 
-	req := httptest.NewRequest(http.MethodGet, "/payments/1", nil)
+	req := httptest.NewRequest(http.MethodGet, sop.PaymentsEndpoint + "/1", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.SetParamNames("id")
@@ -102,14 +103,14 @@ func TestUpdatePayment(t *testing.T) {
 	paymentC := NewPaymentController(cc)
 
 	if err := paymentC.CreatePayment(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/payments/0", nil),
+		httptest.NewRequest(http.MethodPost, sop.PaymentsEndpoint + "/0", nil),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreatePayment error: %v", err)
+		t.Fatalf(sop.CreatePaymentErrorv, err)
 	}
 
 	paymentJSON := `{"amount":150.0,"method":"PayPal","cart_id":0}`
-	req := httptest.NewRequest(http.MethodPut, "/payments/1", strings.NewReader(paymentJSON))
+	req := httptest.NewRequest(http.MethodPut, sop.PaymentsEndpoint + "/1", strings.NewReader(paymentJSON))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
@@ -129,13 +130,13 @@ func TestDeletePayment(t *testing.T) {
 	paymentC := NewPaymentController(cc)
 
 	if err := paymentC.CreatePayment(e.NewContext(
-		httptest.NewRequest(http.MethodPost, "/payments/0", nil),
+		httptest.NewRequest(http.MethodPost, sop.PaymentsEndpoint + "/0", nil),
 		httptest.NewRecorder(),
 	)); err != nil {
-		t.Fatalf("CreatePayment error: %v", err)
+		t.Fatalf(sop.CreatePaymentErrorv, err)
 	}
 
-	req := httptest.NewRequest(http.MethodDelete, "/payments/1", nil)
+	req := httptest.NewRequest(http.MethodDelete, sop.PaymentsEndpoint + "/1", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.SetParamNames("id")

@@ -12,4 +12,15 @@ const (
     CartProducts       = "/carts/:id/products/:productId"
     PaymentByCartID    = "/payments/:cartID"
     PaymentByID        = "/payments/:id"
+
+	InvalidCartID	   = "invalid cart ID"
+	CartNotFound	   = "cart not found"
+
+	CreateCartErrorv   = "CreateCart error: %v"
+	ProductContains    = "Products contains:"
+
+	InvalidPaymentID   = "invalid payment ID"
+	PaymentNotFound	   = "payment not found"
+
+	CreatePaymentErrorv   = "CreatePayment error: %v"
 )
